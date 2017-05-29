@@ -25,21 +25,16 @@ def gen_barcode(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
-@app.route('/get_barcode')
-def get_combined():
-    return Response(gen_barcode(VideoCamera(0)),
+@app.route('/barcode/<variable>')
+def get_barcode(variable):
+    return Response(gen_barcode(VideoCamera(int(variable))),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/get_left')
-def right_video_feed():
-    return Response(gen(VideoCamera(0)),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/get_right')
-def left_video_feed():
-    return Response(gen(VideoCamera(1)),
+@app.route('/stream/<variable>')
+def stream_camera(variable):
+    print 'using camera: ' + variable
+    return Response(gen(VideoCamera(int(variable))),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
