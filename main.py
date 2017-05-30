@@ -18,7 +18,7 @@ cameras = {}
 
 @app.route('/')
 def index():
-    return "automatorpi"
+    return "automatorpi test"
 
 
 def gen(camera):
@@ -61,7 +61,7 @@ def stream_camera(camnum):
         return Response(gen(cameras[int(camnum)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
-        return 'Failed to retreive  stream from camera ' + camnum
+        return 'Failed to retreive c stream from camera ' + camnum
 
 
 if __name__ == '__main__':
