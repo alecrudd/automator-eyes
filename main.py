@@ -43,6 +43,8 @@ def stream_barcode(camnum):
     try:
         if(camnum not in cameras):
             cameras[camnum] = VideoCamera(camnum)
+            if(cameras[camnum].isOpen is False):
+                return 'Camera %d failed to open' % camnum
         return Response(gen_barcode(cameras[int(camnum)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
@@ -54,7 +56,8 @@ def stream_camera(camnum):
     try:
         if(camnum not in cameras):
             cameras[camnum] = VideoCamera(camnum)
-
+            if(cameras[camnum].isOpen is False):
+                return 'Camera %d failed to open' % camnum
         return Response(gen(cameras[int(camnum)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:

@@ -12,6 +12,9 @@ class VideoCamera(object):
         self.output = self.video.read()
         self.grab_started = False
 
+    def is_open(self):
+        return self.video.isOpen()
+
     def __del__(self):
         self.video.release()
 
