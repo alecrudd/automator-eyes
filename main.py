@@ -1,9 +1,17 @@
 # main.py
 from flask import Flask, render_template, Response
 from camera import VideoCamera
-from barcode import find_barcode
+import socket
 
 app = Flask(__name__)
+
+
+port = 5000
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+ip = s.getsockname()[0]
+s.close()
 
 
 @app.route('/')
@@ -39,4 +47,4 @@ def stream_camera(variable):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', threaded=True)
+    app.run(host=ip, port=port, threaded=True)
