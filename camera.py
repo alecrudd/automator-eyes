@@ -1,4 +1,6 @@
-# camera.py
+'''
+camera.py
+'''
 
 import cv2
 from barcode import find_barcode
@@ -37,7 +39,7 @@ class VideoCamera(object):
         except:
             return None
 
-    def get_barcode(self):
+    def get_barcode_frame(self):
         try:
             barcode = find_barcode(self.output.copy())
             ret, jpeg = cv2.imencode('.jpg', barcode)
