@@ -48,7 +48,7 @@ def stream_barcode(camnum):
         return Response(gen_barcode(cameras[int(camnum)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
-        return 'Failed to retreive stream from camera ' + camnum
+        return 'Failed to retreive barcode stream from camera ' + camnum
 
 
 @app.route('/stream/<camnum>')
@@ -61,7 +61,7 @@ def stream_camera(camnum):
         return Response(gen(cameras[int(camnum)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
-        return 'Failed to retreive barcode stream from camera ' + camnum
+        return 'Failed to retreive  stream from camera ' + camnum
 
 
 if __name__ == '__main__':
