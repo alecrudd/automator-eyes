@@ -3,8 +3,7 @@ from flask import Flask, Response
 from camera import VideoCamera
 import socket
 import sys
-import argparse
-import time
+import argparse as ap
 
 app = Flask(__name__)
 
@@ -13,7 +12,7 @@ port = 5000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
-ip = s.getsockname()[0]
+host = s.getsockname()[0]
 s.close()
 
 cameras = {}
@@ -82,13 +81,13 @@ def stream_camera(cam_name):
         return 'Failed to retreive c stream from camera ', cam_num
 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('-L', '--use-local', action='store_true',
-                    help='use local host for camera')
+parser = ap.ArgumentParser(description="Start the webcam stream")
+parser.add_argument('--local', action='store_true')
+args = parser.parse_args()
 
-use_local = parser.parse_args(['--use-local'])
 
 if __name__ == '__main__':
-    if use_local:
+    if args.local:
         host = 'localhost'
+    print host
     app.run(host=host, port=port, threaded=True)
