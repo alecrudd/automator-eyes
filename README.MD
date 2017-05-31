@@ -10,3 +10,10 @@
 > @reboot /path/to/open-eyes.sh
 * Save the file
 > ctrl + X K
+
+### Dev Set up
+* Install python 2.7 (if you don't have it)
+* Install opencv 3.2
+  * Do something like
+> http://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/
+* Create a virtual environment (see instructions above)
