@@ -55,7 +55,7 @@ class VideoCamera(object):
 
     def get_barcode_frame(self):
         try:
-            barcode = find_barcode(self.output.copy())
+            barcode = find_barcode(self.output)
             ret, jpeg = cv2.imencode('.jpg', barcode)
             return jpeg.tobytes()
         except:
