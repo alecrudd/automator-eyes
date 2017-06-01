@@ -56,7 +56,9 @@ class VideoCamera(object):
     def get_barcode_frame(self):
         try:
             barcode = find_barcode(self.output.copy())
-            ret, jpeg = cv2.imencode('.jpg', barcode)
+            if(barcode is None):
+                print 'barcode empty'
+            ret, jpeg = cv2.imencode('.jpg', barcode.copy())
             return jpeg.tobytes()
         except:
             print 'Error encoding frame:', sys.exc_info()[0]
