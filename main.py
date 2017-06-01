@@ -31,6 +31,8 @@ def gen(camera):
     camera.start_frame_grab()
     while True:
         frame = camera.get_frame()
+        if frame is None:
+            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -40,6 +42,8 @@ def gen_barcode(camera):
     camera.start_frame_grab()
     while True:
         frame = camera.get_barcode()
+        if frame is None:
+            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
