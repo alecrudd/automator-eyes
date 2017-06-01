@@ -73,16 +73,16 @@ def stream_barcode(cam_name):
 @app.route('/stream/<cam_name>')
 def stream_camera(cam_name):
     try:
-        cam_num = int(cam_name)
-        (success, message) = add_camera(cam_num)
+        # cam_num = int(cam_name)
+        (success, message) = add_camera(cam_name)
         if(success is False):
             return message
-        return Response(gen(cameras[int(cam_num)]),
+        return Response(gen(cameras[cam_name]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
         print 'Failed to retreive c stream from camera. Excpetion: ', \
                 sys.exc_info()[0]
-        return 'Failed to retreive c stream from camera ', cam_num
+        return 'Failed to retreive c stream from camera ', cam_name
 
 
 parser = ap.ArgumentParser(description="Start the webcam stream")
