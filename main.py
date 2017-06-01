@@ -40,6 +40,7 @@ def gen_barcode(camera):
     while True:
         frame = camera.get_barcode_frame()
         if frame is None:
+            print 'no barcode frame'
             continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
