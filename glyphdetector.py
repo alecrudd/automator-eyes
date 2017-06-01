@@ -14,10 +14,12 @@ def find_glyph(image):
         edges = cv2.Canny(gray, 100, 200)
 
         # Stage 2: Find contours
-        im2, contours, _ = cv2.findContours(edges, cv2.RETR_TREE,
-                                        cv2.CHAIN_APPROX_SIMPLE)
+    #    im2, contours, _ = cv2.findContours(edges, cv2.RETR_TREE,
+    #                                    cv2.CHAIN_APPROX_SIMPLE)
+        contoursresult = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
+        
+        contours = sorted(contours[1], key=cv2.contourArea, reverse=True)[:10]
         found_glyphs = []
         for contour in contours:
             # Stage 3: Shape check
