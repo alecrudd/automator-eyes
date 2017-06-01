@@ -6,6 +6,7 @@ import cv2
 import sys
 import threading
 from barcode import find_barcode
+import glyphdetector as gd
 
 
 class VideoCamera(object):
@@ -60,3 +61,10 @@ class VideoCamera(object):
             return jpeg.tobytes()
         except:
             return None
+
+    def get_glyph_frame(self):
+        glyph = gd.find_glyph(self.output.copy())
+        if glyph is not None:
+            ret, jpeg = cv2.imencode('.jpg', glyph)
+            return jpeg.tobytes()
+        return None

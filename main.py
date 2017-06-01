@@ -4,6 +4,8 @@ from camera import VideoCamera
 import socket
 import sys
 import argparse as ap
+import glyphdetector as gd
+
 
 app = Flask(__name__)
 
@@ -41,6 +43,17 @@ def gen_barcode(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
+def gen_glpyh(camera):
+    print 'Starting glyph'
+    camera.start_frame_grab()
+    while True:
+        frame = camera.get_glyph_frame()
+        if frame is None:
+            continue
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
 def add_camera(cam_name):
     if(cam_name not in cameras):
         print 'Camera doesn\'t exist, adding new camera ', cam_name
@@ -59,6 +72,20 @@ def stream_barcode(cam_name):
         if(success is False):
             return message
         return Response(gen_barcode(cameras[cam_name]),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+    except:
+        print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
+
+        return 'Failed to retreive barcode stream from camera ', cam_name
+
+
+@app.route('/glyph/<cam_name>')
+def stream_glyph(cam_name):
+    try:
+        (success, message) = add_camera(cam_name)
+        if(success is False):
+            return message
+        return Response(gen_glpyh(cameras[cam_name]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
         print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
