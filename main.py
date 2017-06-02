@@ -27,7 +27,7 @@ def index():
 
 def gen(camera):
     print 'Starting the normal stream'
-    camera.start_frame_grab()
+    camera.start_frame_grab(ROTATION, ZOOM)
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
@@ -36,7 +36,7 @@ def gen(camera):
 
 def gen_barcode(camera):
     print 'Starting barcode stream'
-    camera.start_frame_grab()
+    camera.start_frame_grab(ROTATION, ZOOM)
     while True:
         frame = camera.get_barcode_frame()
         yield (b'--frame\r\n'
@@ -45,7 +45,7 @@ def gen_barcode(camera):
 
 def gen_glpyh(camera):
     print 'Starting glyph'
-    camera.start_frame_grab()
+    camera.start_frame_grab(ROTATION, ZOOM)
     while True:
         frame = camera.get_glyph_frame()
         if frame is None:
@@ -110,8 +110,17 @@ def stream_camera(cam_name):
 
 parser = ap.ArgumentParser(description="Start the webcam stream")
 parser.add_argument('--local', action='store_true')
-args = parser.parse_args()
+parser.add_argument('--rotate', default=0,
+                    help='rotation of the image')
+parser.add_argument('--zoom', default=1,
+                    help='zoom level of the image as a percent')
 
+args = parser.parse_args()
+try:
+    ROTATION = float(args.rotate)
+    ZOOM = float(args.zoom)
+except ValueError:
+    print "Invalid rotate/zoom setting specified!!"
 
 if __name__ == '__main__':
     if args.local:
