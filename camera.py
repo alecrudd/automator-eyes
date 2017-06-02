@@ -33,9 +33,6 @@ class VideoCamera(object):
 
                 rot_mat = cv2.getRotationMatrix2D(center, rotation, 1)
                 result = cv2.warpAffine(resized_image, rot_mat, (w, h))
-                # if crop is None:
-                #     self.output = result.copy()
-                # else:
                 cropped = result[crop[1]:h-crop[1], crop[0]:w-crop[0]]
                 self.output = cropped.copy()
 
