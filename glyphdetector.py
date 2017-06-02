@@ -1,3 +1,4 @@
+import numpy
 import cv2
 from glyphhelpers import *
 

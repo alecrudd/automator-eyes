@@ -1,7 +1,7 @@
 '''
 camera.py
 '''
-
+import numpy
 import cv2
 import sys
 import threading
