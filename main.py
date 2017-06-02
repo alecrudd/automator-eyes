@@ -27,7 +27,7 @@ def index():
 
 def gen(camera):
     print 'Starting the normal stream'
-    camera.start_frame_grab(ROTATION, ZOOM)
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
@@ -36,7 +36,7 @@ def gen(camera):
 
 def gen_barcode(camera):
     print 'Starting barcode stream'
-    camera.start_frame_grab(ROTATION, ZOOM)
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_barcode_frame()
         yield (b'--frame\r\n'
@@ -45,7 +45,7 @@ def gen_barcode(camera):
 
 def gen_glpyh(camera):
     print 'Starting glyph'
-    camera.start_frame_grab(ROTATION, ZOOM)
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_glyph_frame()
         if frame is None:
@@ -114,11 +114,17 @@ parser.add_argument('--rotate', default=0,
                     help='rotation of the image')
 parser.add_argument('--zoom', default=1,
                     help='zoom level of the image as a percent')
+# To make the input integers
+parser.add_argument('--crop', nargs='+', type=int, default=(0,0),
+                    help='Width, Height values to crop. Cropping is \
+                    symmetric')
+
 
 args = parser.parse_args()
 try:
     ROTATION = float(args.rotate)
     ZOOM = float(args.zoom)
+    CROP = args.crop
 except ValueError:
     print "Invalid rotate/zoom setting specified!!"
 

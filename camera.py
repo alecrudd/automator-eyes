@@ -23,7 +23,7 @@ class VideoCamera(object):
     def __del__(self):
         self.video.release()
 
-    def grab_frames(self, rotation, zoom):
+    def grab_frames(self, rotation, zoom, crop):
         while self.grab_started:
             success, image = self.video.read()
             if success:
@@ -33,16 +33,19 @@ class VideoCamera(object):
 
                 rot_mat = cv2.getRotationMatrix2D(center, rotation, 1)
                 result = cv2.warpAffine(resized_image, rot_mat, (w, h))
-                cropped = result[50:400, 50:300]
-                self.output = result.copy()
+                # if crop is None:
+                #     self.output = result.copy()
+                # else:
+                cropped = result[crop[1]:h-crop[1], crop[0]:w-crop[0]]
+                self.output = cropped.copy()
 
-    def start_frame_grab(self, rotation, zoom):
+    def start_frame_grab(self, rotation=0, zoom=1, crop=(0, 0)):
         if(self.grab_started):
             return False
         print 'Starting the frame grabber'
         self.grab_started = True
         grabber_thread = threading.Thread(target=self.grab_frames,
-                                          args=(rotation, zoom,))
+                                          args=(rotation, zoom, crop,))
         grabber_thread.start()
 
     def stop_frame_grab(self):
