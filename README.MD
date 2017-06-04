@@ -4,8 +4,8 @@
 * The easiest way is to just clone the repository onto the automator
 * Navigate to the folder location
 * Make a new virtual environment.
-> virtualenv .
-  This will make the virtual environment in the folder that you are currently in. This should probably be in ~/.virtualenvs or something
+```virtualenv .```
+This will make the virtual environment in the folder that you are currently in. This should probably be in ~/.virtualenvs or something
 * Run open-eyes.sh
  * This tries to set some camera parameters then starts the virtualenvironnment (with `workon automator-eyes`). Output gets logged into the same folder that the main script is in
 
