@@ -1,8 +1,12 @@
 #!/bin/bash
 
 uvcdynctrl -s 'Brightness' 0.1
-cd ~/.virtualenvs/automator-eyes
-source bin/activate
 
-python main.py --local --rotate -3 > logs.txt &
-source bin/deactivate
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo $DIR
+#cd ~/.virtualenvs/automator-eyes
+source $DIR"/bin/activate"
+
+python $DIR"/main.py" --local --rotate -3 > logs.txt &
+source $DIR"/bin/deactivate"
