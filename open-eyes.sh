@@ -2,5 +2,5 @@
 
 uvcdynctrl -s 'Brightness' 0.1
 
-cd /opt/automator-eyes/
-python main.py
+workon automator-eyes
+python /opt/automator-eyes/main.py --local --rotate -3 & > logs.txt
