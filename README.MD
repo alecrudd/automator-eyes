@@ -19,11 +19,11 @@ pip install -r requirements.txt
  ```
 
 ### Command Line Args
-Arg | Value | Description
+Arg               | Value      | Description
 ----------------- | ---------- | -------
---local           | N/A | starts the stream on local host rather than the computer's IP
---rotate          | decimal | Rotates the image by the given value. Ex --rotate -3
---zoom            | decimal | Zooms in as a percent of the given value. Ex. --zoom 0.50 would be 1/2 the size of the webcam resolution
+--local           | N/A        | starts the stream on local host rather than the computer's IP
+--rotate          | decimal    | Rotates the image by the given value. Ex --rotate -3
+--zoom            | decimal    | Zooms in as a percent of the given value. Ex. --zoom 0.50 would be 1/2 the size of the webcam resolution
 --crop            | width height | Crops by the given number of pixels in the width and height. Crop is always symetric. ex. --crop 10 20 would crop 10 pixels off each side of the width, and 20 off of each side of the height 
 
 ### Streams
