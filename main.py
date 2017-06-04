@@ -119,9 +119,8 @@ def shutdown_server():
 def stop_program():
     print cameras
     for num, cam in cameras.iteritems():
-        shutdown_server()
         cam.stop_frame_grab()
-
+    shutdown_server()
     return 'Stopped all cameras.'
 
 parser = ap.ArgumentParser(description="Start the webcam stream")
