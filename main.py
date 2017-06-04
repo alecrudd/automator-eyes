@@ -4,6 +4,8 @@ from camera import VideoCamera
 import socket
 import sys
 import argparse as ap
+import glyphdetector as gd
+
 
 app = Flask(__name__)
 
@@ -25,7 +27,7 @@ def index():
 
 def gen(camera):
     print 'Starting the normal stream'
-    camera.start_frame_grab()
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_frame()
         if frame is None:
@@ -36,11 +38,22 @@ def gen(camera):
 
 def gen_barcode(camera):
     print 'Starting barcode stream'
-    camera.start_frame_grab()
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_barcode_frame()
         if frame is None:
             print 'no barcode frame'
+            continue
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+def gen_glpyh(camera):
+    print 'Starting glyph'
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
+    while True:
+        frame = camera.get_glyph_frame()
+        if frame is None:
             continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
@@ -71,6 +84,20 @@ def stream_barcode(cam_name):
         return 'Failed to retreive barcode stream from camera ', cam_name
 
 
+@app.route('/glyph/<cam_name>')
+def stream_glyph(cam_name):
+    try:
+        (success, message) = add_camera(cam_name)
+        if(success is False):
+            return message
+        return Response(gen_glpyh(cameras[cam_name]),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+    except:
+        print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
+
+        return 'Failed to retreive barcode stream from camera ', cam_name
+
+
 @app.route('/stream/<cam_name>')
 def stream_camera(cam_name):
     try:
@@ -88,8 +115,23 @@ def stream_camera(cam_name):
 
 parser = ap.ArgumentParser(description="Start the webcam stream")
 parser.add_argument('--local', action='store_true')
-args = parser.parse_args()
+parser.add_argument('--rotate', default=0,
+                    help='rotation of the image')
+parser.add_argument('--zoom', default=1,
+                    help='zoom level of the image as a percent')
+# To make the input integers
+parser.add_argument('--crop', nargs='+', type=int, default=(0,0),
+                    help='Width, Height values to crop. Cropping is \
+                    symmetric')
 
+
+args = parser.parse_args()
+try:
+    ROTATION = float(args.rotate)
+    ZOOM = float(args.zoom)
+    CROP = args.crop
+except ValueError:
+    print "Invalid rotate/zoom setting specified!!"
 
 if __name__ == '__main__':
     if args.local:
