@@ -1,5 +1,5 @@
 # main.py
-from flask import Flask, Response
+from flask import Flask, Response, request
 from camera import VideoCamera
 import socket
 import sys
@@ -30,8 +30,6 @@ def gen(camera):
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_frame()
-        if frame is None:
-            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -41,9 +39,6 @@ def gen_barcode(camera):
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
         frame = camera.get_barcode_frame()
-        if frame is None:
-            print 'no barcode frame'
-            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -101,17 +96,33 @@ def stream_glyph(cam_name):
 @app.route('/stream/<cam_name>')
 def stream_camera(cam_name):
     try:
-        # cam_num = int(cam_name)
-        (success, message) = add_camera(cam_name)
+        cam_num = int(cam_name)
+        (success, message) = add_camera(cam_num)
         if(success is False):
             return message
-        return Response(gen(cameras[cam_name]),
+        return Response(gen(cameras[int(cam_num)]),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
         print 'Failed to retreive c stream from camera. Excpetion: ', \
                 sys.exc_info()[0]
-        return 'Failed to retreive c stream from camera ', cam_name
+        return 'Failed to retreive c stream from camera ', cam_num
 
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+
+@app.route('/end')
+def stop_program():
+    print cameras
+    for num, cam in cameras.iteritems():
+        shutdown_server()
+        cam.stop_frame_grab()
+
+    return 'Stopped all cameras.'
 
 parser = ap.ArgumentParser(description="Start the webcam stream")
 parser.add_argument('--local', action='store_true')
@@ -120,7 +131,7 @@ parser.add_argument('--rotate', default=0,
 parser.add_argument('--zoom', default=1,
                     help='zoom level of the image as a percent')
 # To make the input integers
-parser.add_argument('--crop', nargs='+', type=int, default=(0,0),
+parser.add_argument('--crop', nargs='+', type=int, default=(0, 0),
                     help='Width, Height values to crop. Cropping is \
                     symmetric')
 
