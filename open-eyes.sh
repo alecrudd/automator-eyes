@@ -8,5 +8,5 @@ echo $DIR
 #cd ~/.virtualenvs/automator-eyes
 source $DIR"/bin/activate"
 
-python $DIR"/main.py" --local --rotate -3 > logs.txt &
+python $DIR"/main.py" --local --rotate -3 > $DIR/"logs.txt" &
 source $DIR"/bin/deactivate"

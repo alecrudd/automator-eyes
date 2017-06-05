@@ -146,5 +146,8 @@ except ValueError:
 if __name__ == '__main__':
     if args.local:
         host = 'localhost'
-    print host
-    app.run(host=host, port=port, threaded=True)
+    print "Starting camera on ", host
+    try:
+        app.run(host=host, port=port, threaded=True)
+    except socket.error:
+        print "Camera already running, exiting."
