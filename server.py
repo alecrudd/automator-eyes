@@ -39,6 +39,20 @@ def gen(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
+def gen_frames(camera, transform):
+    print 'Starting the stream'
+    camera.start_frame_grab(ROTATION, ZOOM, CROP)
+    while True:
+        image = camera.get_frame()
+        if transform is not 'stream' and routes[transform]:
+            image = routes[transform](image)
+        frame = cvhelpers.encode_to_jpeg(image)
+        if frame is None:
+            continue
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
 def gen_barcode(camera):
     print 'Starting barcode stream'
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
@@ -127,7 +141,7 @@ def start_stream(cam_num):
             print 'none camera in stream'
             return message
         transform = request.args.get('transform') or 'stream'
-        return Response(routes[transform](camera),
+        return Response(gen(camera, transform),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
         print 'Failed to retreive stream from camera. ', sys.exc_info()[0]
@@ -163,9 +177,9 @@ parser.add_argument('--crop', nargs='+', type=int, default=(0, 0),
 
 # mapping of routes to the functions that supply images
 routes = {
-    'stream': gen,
-    'barcode': gen_barcode,
-    'glyph': gen_glpyh
+    'stream': None,
+    'barcode': find_barcode,
+    'glyph': gd.find_glyph
 }
 
 
