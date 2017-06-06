@@ -63,4 +63,4 @@ $ curl 192.1.100:500/end
 > http://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/
 * Create a virtual environment (see instructions in the link above)
 * link the python binaries to the virutal env
-` ln -s /usr/local/lib/python2.7/site-packages/cv2.so ~/.virtualenvs/MyVirtualEnv/lib/python/site-packages/cv2.so
+` ln -s /usr/local/lib/python2.7/site-packages/cv2.so ~/.virtualenvs/MyVirtualEnv/lib/python/site-packages/cv2.so`
