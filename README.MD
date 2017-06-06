@@ -5,16 +5,16 @@
 ` git clone https://github.com/alecrudd/automator-eyes.git `
 * Navigate to the folder location
 * Make a new virtual environment.
-```
+``` shell
 virtualenv .
-```
+``` 
 This will make the virtual environment in the folder that you are currently in.
 * Install the python dependencies
-```
+``` shell
 pip install -r requirements.txt
-```
+``` 
  * Run the open-eyes.sh script
- ```
+ ``` shell
  . /Path/to/script/open-eyes.sh
  ```
 
@@ -51,7 +51,7 @@ For example
 192.1.100:5000/end       # stops the webcam server
 ```
 Usually this would be done from a command line
-```
+``` shell
 $ curl 192.1.100:500/end
 > Stopped all cameras.
 ```
@@ -63,4 +63,6 @@ $ curl 192.1.100:500/end
 > http://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/
 * Create a virtual environment (see instructions in the link above)
 * link the python binaries to the virutal env
-` ln -s /usr/local/lib/python2.7/site-packages/cv2.so ~/.virtualenvs/MyVirtualEnv/lib/python/site-packages/cv2.so`
+``` shell
+ln -s /usr/local/lib/python2.7/site-packages/cv2.so ~/.virtualenvs/MyVirtualEnv/lib/python/site-packages/cv2.so 
+```
