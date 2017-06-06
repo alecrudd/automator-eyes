@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# need to set path to get uvcdynctrl to work in the script!
 uvcdynctrl -s 'Brightness' 0.1
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
