@@ -37,7 +37,7 @@ Url | Description
 
 Query Params   | Description
 -------------  | -------------
-transform      | the transform to apply. Valid values are 'glyph', 'stream', and 'barcode' at the moment.
+transform      | the transform to apply. Values: `{'glyph', 'stream', 'barcode'}`
 
 The ID of the camera must be appended onto the URL as well. An example of a full url would be
 ```
