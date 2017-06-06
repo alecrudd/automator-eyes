@@ -45,7 +45,6 @@ def find_glyph(image):
                                                     WHITE_THRESHOLD)
                     glyph_found, glyph_rotation, glyph_substitute = match_glyph_pattern(glyph_pattern)
                 except:
-                    print 'failed'
                     return None
 
                 if glyph_found:

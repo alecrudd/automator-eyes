@@ -4,6 +4,8 @@ from camera import VideoCamera
 import socket
 import sys
 import argparse as ap
+import cvhelpers
+from barcode import find_barcode
 import glyphdetector as gd
 
 
@@ -29,7 +31,10 @@ def gen(camera):
     print 'Starting the normal stream'
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
-        frame = camera.get_frame()
+        image = camera.get_frame()
+        frame = cvhelpers.encode_to_jpeg(image)
+        if frame is None:
+            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -38,7 +43,10 @@ def gen_barcode(camera):
     print 'Starting barcode stream'
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
-        frame = camera.get_barcode_frame()
+        image = find_barcode(camera.get_frame())
+        frame = cvhelpers.encode_to_jpeg(image)
+        if frame is None:
+            continue
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
@@ -47,7 +55,8 @@ def gen_glpyh(camera):
     print 'Starting glyph'
     camera.start_frame_grab(ROTATION, ZOOM, CROP)
     while True:
-        frame = camera.get_glyph_frame()
+        image = gd.find_glyph(camera.get_frame())
+        frame = cvhelpers.encode_to_jpeg(image)
         if frame is None:
             continue
         yield (b'--frame\r\n'
@@ -59,53 +68,70 @@ def add_camera(cam_name):
         print 'Camera doesn\'t exist, adding new camera ', cam_name
         cam = VideoCamera(int(cam_name))
         if(cam.is_open() is False):
-            return False, 'Camera %s failed to open' % cam_name
+            return None, 'Camera %s failed to open' % cam_name
         cameras[cam_name] = cam
-        return True, 'Opened camera'
-    return True, 'Cameras already opened'
+        return cameras[cam_name], 'Opened camera'
+    return cameras[cam_name], 'Cameras already opened'
 
 
-@app.route('/barcode/<cam_name>')
-def stream_barcode(cam_name):
+# old routes - to be removed
+#
+# @app.route('/barcode/<cam_name>')
+# def stream_barcode(cam_name):
+#     try:
+#         (success, message) = add_camera(cam_name)
+#         if(success is False):
+#             return message
+#         return Response(gen_barcode(cameras[cam_name]),
+#                         mimetype='multipart/x-mixed-replace; boundary=frame')
+#     except:
+#         print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
+#
+#         return 'Failed to retreive barcode stream from camera ', cam_name
+#
+#
+# @app.route('/glyph/<cam_name>')
+# def stream_glyph(cam_name):
+#     try:
+#         (success, message) = add_camera(cam_name)
+#         if(success is False):
+#             return message
+#         return Response(gen_glpyh(cameras[cam_name]),
+#                         mimetype='multipart/x-mixed-replace; boundary=frame')
+#     except:
+#         print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
+#
+#         return 'Failed to retreive barcode stream from camera ', cam_name
+#
+#
+# @app.route('/stream/<cam_name>')
+# def stream_camera(cam_name):
+#     try:
+#         cam_num = int(cam_name)
+#         (success, message) = add_camera(cam_num)
+#         if(success is False):
+#             return message
+#         return Response(gen(cameras[int(cam_num)]),
+#                         mimetype='multipart/x-mixed-replace; boundary=frame')
+#     except:
+#         print 'Failed to retreive c stream from camera. Excpetion: ', \
+#                 sys.exc_info()[0]
+#         return 'Failed to retreive c stream from camera ', cam_num
+
+
+@app.route('/stream/<int:cam_num>')
+def start_stream(cam_num):
     try:
-        (success, message) = add_camera(cam_name)
-        if(success is False):
+        (camera, message) = add_camera(cam_num)
+        if(camera is None):
+            print 'none camera in stream'
             return message
-        return Response(gen_barcode(cameras[cam_name]),
+        transform = request.args.get('transform') or 'stream'
+        return Response(routes[transform](camera),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
-        print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
-
-        return 'Failed to retreive barcode stream from camera ', cam_name
-
-
-@app.route('/glyph/<cam_name>')
-def stream_glyph(cam_name):
-    try:
-        (success, message) = add_camera(cam_name)
-        if(success is False):
-            return message
-        return Response(gen_glpyh(cameras[cam_name]),
-                        mimetype='multipart/x-mixed-replace; boundary=frame')
-    except:
-        print 'Failed to retreive bar stream from camera ', sys.exc_info()[0]
-
-        return 'Failed to retreive barcode stream from camera ', cam_name
-
-
-@app.route('/stream/<cam_name>')
-def stream_camera(cam_name):
-    try:
-        cam_num = int(cam_name)
-        (success, message) = add_camera(cam_num)
-        if(success is False):
-            return message
-        return Response(gen(cameras[int(cam_num)]),
-                        mimetype='multipart/x-mixed-replace; boundary=frame')
-    except:
-        print 'Failed to retreive c stream from camera. Excpetion: ', \
-                sys.exc_info()[0]
-        return 'Failed to retreive c stream from camera ', cam_num
+        print 'Failed to retreive stream from camera. ', sys.exc_info()[0]
+        return 'Failed to retreive stream from camera ', cam_num
 
 
 def shutdown_server():
@@ -123,6 +149,7 @@ def stop_program():
     shutdown_server()
     return 'Stopped all cameras.'
 
+
 parser = ap.ArgumentParser(description="Start the webcam stream")
 parser.add_argument('--local', action='store_true')
 parser.add_argument('--rotate', default=0,
@@ -133,6 +160,13 @@ parser.add_argument('--zoom', default=1,
 parser.add_argument('--crop', nargs='+', type=int, default=(0, 0),
                     help='Width, Height values to crop. Cropping is \
                     symmetric')
+
+# mapping of routes to the functions that supply images
+routes = {
+    'stream': gen,
+    'barcode': gen_barcode,
+    'glyph': gen_glpyh
+}
 
 
 args = parser.parse_args()

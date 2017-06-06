@@ -8,6 +8,7 @@ import threading
 from barcode import find_barcode
 import glyphdetector as gd
 
+
 class VideoCamera(object):
     def __init__(self, num):
         try:
@@ -49,6 +50,9 @@ class VideoCamera(object):
         self.grab_started = False
 
     def get_frame(self):
+        return self.output
+
+    def get_jpeg_frame(self):
         try:
             # success, image = self.video.read()
             # We are using Motion JPEG, but OpenCV defaults to capture raw
