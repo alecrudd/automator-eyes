@@ -1,6 +1,7 @@
 import numpy
 import cv2
-from glyphhelpers import *
+from glyphhelpers import get_topdown_quad, resize_image, get_glyph_pattern, \
+    match_glyph_pattern
 
 QUADRILATERAL_POINTS = 4
 SHAPE_RESIZE = 100.0
@@ -44,7 +45,8 @@ def find_glyph(image):
                     glyph_pattern = get_glyph_pattern(resized_shape,
                                                       BLACK_THRESHOLD,
                                                       WHITE_THRESHOLD)
-                    glyph_found, glyph_rotation, glyph_substitute = match_glyph_pattern(glyph_pattern)
+                    glyph_found, glyph_rotation, glyph_substitute = \
+                        match_glyph_pattern(glyph_pattern)
                 except:
                     return None
 
