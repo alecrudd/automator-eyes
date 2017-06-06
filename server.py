@@ -141,7 +141,7 @@ def start_stream(cam_num):
             print 'none camera in stream'
             return message
         transform = request.args.get('transform') or 'stream'
-        return Response(gen(camera, transform),
+        return Response(gen_frames(camera, transform),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
     except:
         print 'Failed to retreive stream from camera. ', sys.exc_info()[0]
