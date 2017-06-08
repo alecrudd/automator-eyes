@@ -1,6 +1,7 @@
 import numpy
 import cv2
-from glyphhelpers import *
+from glyphhelpers import get_topdown_quad, resize_image, get_glyph_pattern, \
+    match_glyph_pattern
 
 QUADRILATERAL_POINTS = 4
 SHAPE_RESIZE = 100.0
@@ -17,7 +18,8 @@ def find_glyph(image):
         # Stage 2: Find contours
     #    im2, contours, _ = cv2.findContours(edges, cv2.RETR_TREE,
     #                                    cv2.CHAIN_APPROX_SIMPLE)
-        contourresult = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contourresult = cv2.findContours(edges, cv2.RETR_TREE,
+                                         cv2.CHAIN_APPROX_SIMPLE)
 
         contours = contourresult[1]
         contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
@@ -41,11 +43,11 @@ def find_glyph(image):
                         continue
                     # Stage 7: Glyph pattern
                     glyph_pattern = get_glyph_pattern(resized_shape,
-                                                    BLACK_THRESHOLD,
-                                                    WHITE_THRESHOLD)
-                    glyph_found, glyph_rotation, glyph_substitute = match_glyph_pattern(glyph_pattern)
+                                                      BLACK_THRESHOLD,
+                                                      WHITE_THRESHOLD)
+                    glyph_found, glyph_rotation, glyph_substitute = \
+                        match_glyph_pattern(glyph_pattern)
                 except:
-                    print 'failed'
                     return None
 
                 if glyph_found:
@@ -63,12 +65,4 @@ def find_glyph(image):
                                 2)
 
                     found_glyphs.append(contour)
-                    # # Stage 8: Substitute glyph
-                    # substitute_image = cv2.imread('glyphs/images/{}.jpg'.format(glyph_substitute))
-                    #
-                    # for _ in range(glyph_rotation):
-                    #     substitute_image = rotate_image(substitute_image, 90)
-                    #
-                    # image = add_substitute_quad(image, substitute_image,
-                    #                             approx.reshape(4, 2))
         return image
